@@ -2,22 +2,52 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Start Timed Quiz</title>
+  <title>Timed Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    #timer { font-size: 2em; margin-bottom: 20px; color: #e74c3c; }
+    iframe { border: none; width: 100%; height: 800px; }
+  </style>
 </head>
 <body>
-  <h2>Loading quiz... ⏱️</h2>
+  <h1>📝 Quiz Timer</h1>
+  <div id="timer">05:00</div>
+
+  <!-- Form iframe con param Start Time -->
+  <iframe id="quizFrame"></iframe>
+
   <script>
-    // Link base del tuo Google Form
-    const baseFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSeDN_e-sodNo07Jc5kSYXXWvSVNAZzPFdE9wWbUFq6SrwUtGA/viewform?usp=pp_url&entry.553462695=";
+    const iframe = document.getElementById('quizFrame');
+    const timerDisplay = document.getElementById('timer');
 
-    // Genera il timestamp ISO corrente
-    const now = new Date().toISOString();
+    // Salva il timestamp di apertura
+    const startTime = new Date().toISOString();
 
-    // Costruisci il link completo
-    const timedLink = baseFormURL + encodeURIComponent(now);
+    // Google Form base link
+    const formBase = "https://docs.google.com/forms/d/e/1FAIpQLSeDN_e-sodNo07Jc5kSYXXWvSVNAZzPFdE9wWbUFq6SrwUtGA/viewform?usp=pp_url&entry.877932747=";
 
-    // Reindirizza l'utente al form
-    window.location.href = timedLink;
+    // Imposta iframe src con startTime precompilato
+    iframe.src = formBase + encodeURIComponent(startTime);
+
+    // Timer 5 minuti
+    let seconds = 5 * 60;
+    const interval = setInterval(() => {
+      seconds--;
+      const min = Math.floor(seconds / 60);
+      const sec = seconds % 60;
+      timerDisplay.textContent = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+
+      if(seconds <= 0){
+        clearInterval(interval);
+        timerDisplay.textContent = "⏰ Time is up!";
+        alert("Time is up! The form is now closed.");
+        // Nascondi iframe
+        iframe.style.display = "none";
+
+        // Qui potresti eventualmente loggare l'evento su un server o chiamare un webhook se vuoi
+        // es: fetch("https://tuo-server.com/logtime?start=" + startTime + "&end=" + new Date().toISOString())
+      }
+    }, 1000);
   </script>
 </body>
 </html>
