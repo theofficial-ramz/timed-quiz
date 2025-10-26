@@ -2,22 +2,47 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Start Timed Quiz</title>
+  <title>Timed Quiz Secure</title>
 </head>
 <body>
-  <h2>Loading quiz... ⏱️</h2>
+  <h2>Loading quiz...</h2>
   <script>
-    // Link base del tuo Google Form
-    const baseFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSeDN_e-sodNo07Jc5kSYXXWvSVNAZzPFdE9wWbUFq6SrwUtGA/viewform?usp=pp_url&entry.553462695=";
+    // Base URL del tuo Google Form
+    const formBase = "https://docs.google.com/forms/d/e/1FAIpQLSeDN_e-sodNo07Jc5kSYXXWvSVNAZzPFdE9wWbUFq6SrwUtGA/viewform?usp=pp_url&entry.553462695=";
 
-    // Genera il timestamp ISO corrente
-    const now = new Date().toISOString();
+    // Timestamp attuale ISO
+    const startTime = new Date().toISOString();
 
-    // Costruisci il link completo
-    const timedLink = baseFormURL + encodeURIComponent(now);
+    // Chiave segreta (per HMAC)
+    const secretKey = "DoNotTryToDecodeTheHashOrYouGetBanned"; 
 
-    // Reindirizza l'utente al form
-    window.location.href = timedLink;
+    // Funzione per generare HMAC-SHA256
+    async function generateHMAC(key, message) {
+      const enc = new TextEncoder();
+      const keyData = enc.encode(key);
+      const msgData = enc.encode(message);
+
+      const cryptoKey = await crypto.subtle.importKey(
+        "raw",
+        keyData,
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      );
+
+      const signature = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
+      // Converti in base64
+      return btoa(String.fromCharCode(...new Uint8Array(signature)));
+    }
+
+    // Genera link sicuro
+    generateHMAC(secretKey, startTime).then(hmac => {
+      const secureValue = encodeURIComponent(startTime + "|" + hmac);
+      const finalLink = formBase + secureValue;
+
+      // Reindirizza l'utente al form
+      window.location.href = finalLink;
+    });
   </script>
 </body>
 </html>
