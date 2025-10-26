@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Start Timed Quiz</title>
+</head>
+<body>
+  <h2>Loading quiz... ⏱️</h2>
+  <script>
+    // Link base del tuo Google Form
+    const baseFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSeDN_e-sodNo07Jc5kSYXXWvSVNAZzPFdE9wWbUFq6SrwUtGA/viewform?usp=pp_url&entry.553462695=";
+
+    // Genera il timestamp ISO corrente
+    const now = new Date().toISOString();
+
+    // Costruisci il link completo
+    const timedLink = baseFormURL + encodeURIComponent(now);
+
+    // Reindirizza l'utente al form
+    window.location.href = timedLink;
+  </script>
+</body>
+</html>
